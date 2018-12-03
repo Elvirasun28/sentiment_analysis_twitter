@@ -101,11 +101,15 @@ x_train_tfidf_norm = norm.transform(x_train_tfidf)
 x_validation_tfidf_norm = norm.transform(x_validation_tfidf)
 
 model_n = Sequential()
-model_n.add(Dense(64,activation='relu',input_dim=1000000))
+model_n.add(Dense(64,activation='relu',input_dim=100000))
 model_n.add(Dense(1,activation='sigmoid'))
 model_n.compile(optimizer='adam',
                 loss='binary_crossentropy',
                 metrics=['accuracy'])
+
+model_n.fit_generator(generator=batch_generator(x_train_tfidf, y_train, 128),
+                    epochs=2, validation_data=(x_validation_tfidf, y_validation),
+                    steps_per_epoch=x_train_tfidf.shape[0]/128)
 
 '''
 By the look of the result, normalizing seems to have almost no effect on the performance. And it is at this point 
