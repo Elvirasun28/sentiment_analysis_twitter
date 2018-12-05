@@ -177,13 +177,13 @@ trigram_branch = GlobalMaxPool1D()(trigram_branch)
 fourgram_branch = Conv1D(filters=100,kernel_size=4,padding='valid',activation='relu',strides=1)(tweet_encoder)
 fourgram_branch = GlobalMaxPool1D()(fourgram_branch)
 
-merged = concatenate(bigram_branch,trigram_branch,fourgram_branch)
+merged = concatenate([bigram_branch,trigram_branch,fourgram_branch],axis = 1)
 
 merged = Dense(256,activation='relu')(merged)
 merged = Dropout(0.2)(merged)
 merged = Dense(1)(merged)
 output = Activation('sigmoid')(merged)
-model = Model(inputs=[tweet_input],output=[output])
+model = Model(inputs=[tweet_input],outputs=[output])
 model.compile(loss='binary_crossentropy',
               optimizer='adam',
               metrics=['accuracy'])
@@ -224,6 +224,7 @@ yhat_cnn = loaded_CNN_model.predict(x_test_seq)
 
 
 ## plot the graph
+from sklearn.metrics import roc_curve, auc
 fpr, tpr, threshold = roc_curve(y_test, yhat_lr[:,1])
 roc_auc = auc(fpr, tpr)
 fpr_cnn, tpr_cnn, threshold = roc_curve(y_test, yhat_cnn)
